@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 class AddNewComponent extends StatelessWidget {
-  const AddNewComponent({Key? key}) : super(key: key);
+  const AddNewComponent({
+    super.key,
+    });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 40,
       height: 40,
       child: Image.asset(

@@ -7,11 +7,12 @@ import '../../shared/widgets/navigation/bottom_nav_bar.dart';
 import '../../data/models/album_item.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final List<AlbumItem> _albums = List.generate(
     18,
@@ -31,9 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           ProfileHeaderWidget(
             name: 'Rifky Adi taqwim',
-            onSearchTap: () {
-              print('Search tapped');
-            },
           ),
           Expanded(
             child: AlbumGridWidget(albums: _albums),

@@ -5,9 +5,9 @@ class AlbumGridWidget extends StatelessWidget {
   final List<AlbumItem> albums;
 
   const AlbumGridWidget({
-    Key? key,
+    super.key,
     required this.albums,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class AlbumGridWidget extends StatelessWidget {
           itemCount: albums.length,
           itemBuilder: (context, index) {
             return ConstrainedBox(
-              constraints: BoxConstraints(
+              constraints: const BoxConstraints(
                 maxWidth: 120,
                 maxHeight: 120,
               ),
@@ -59,51 +59,47 @@ class AlbumItemWidget extends StatelessWidget {
   final AlbumItem album;
 
   const AlbumItemWidget({
-    Key? key,
+    super.key,
     required this.album,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Background image
         Image.asset(
           'assets/images/blue.png',
           width: double.infinity,
           height: double.infinity,
           fit: BoxFit.fill,
         ),
-        // Content
         Center(
           child: LayoutBuilder(
             builder: (context, constraints) {
               final size = constraints.maxWidth;
-              final imageSize = size * 0.5; // 50% dari container
-              final fontSize = size * 0.11; // Ukuran font diperkecil
+              final imageSize = size * 0.5;
+              final fontSize = size * 0.11;
 
               return Transform.translate(
-                offset: Offset(-size * 0.02, 0), // Geser ke kiri sedikit
+                offset: Offset(-size * 0.02, 0),
                 child: Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.start, // Adjusted for alignment
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SizedBox(height: size * 0.09), // Space atas
+                    SizedBox(height: size * 0.09),
                     Image.asset(
                       'assets/images/buah_buahan.png',
                       width: imageSize,
                       height: imageSize,
                       fit: BoxFit.contain,
                     ),
-                    SizedBox(
-                        height: size * 0.02), // Jarak antara gambar dan teks
+                    SizedBox(height: size * 0.02),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: size * 0.1),
                       child: Text(
                         album.title,
                         style: TextStyle(
                           fontSize: fontSize,
-                          fontWeight: FontWeight.bold, // Sedikit lebih tipis
+                          fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
                         textAlign: TextAlign.center,

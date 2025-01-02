@@ -1,91 +1,116 @@
-// lib/screens/home/widgets/profile_header_widget.dart
 import 'package:flutter/material.dart';
-import '../../../core/constants/size_config.dart';
+import 'search_bar_widget.dart';
 
-class ProfileHeaderWidget extends StatelessWidget {
+class ProfileHeaderWidget extends StatefulWidget {
   final String name;
-  final VoidCallback? onSearchTap;
 
   const ProfileHeaderWidget({
-    Key? key,
+    super.key,
     required this.name,
-    this.onSearchTap,
-  }) : super(key: key);
+  });
+
+  @override
+  State<ProfileHeaderWidget> createState() => _ProfileHeaderWidgetState();
+}
+
+class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
+  bool _isSearchVisible = false;
+
+  void _toggleSearch() {
+    setState(() {
+      _isSearchVisible = !_isSearchVisible;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig.init(context);
+    double screenWidth = MediaQuery.of(context).size.width;
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: SizeConfig.getProportionateScreenWidth(16),
-        vertical: SizeConfig.getProportionateScreenHeight(20),
-      ),
-      decoration: const BoxDecoration(
-        color: Color(0xFF354EAB),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
-        ),
-      ),
-      child: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final profileSize = constraints.maxWidth > 360
-                ? SizeConfig.getProportionateScreenWidth(52)
-                : SizeConfig.getProportionateScreenWidth(45);
+    // Specific sizes for different screen widths
+    double headerHeight;
+    double profileSize;
+    double searchSize;
+    double fontSize;
 
-            final searchSize = constraints.maxWidth > 360
-                ? SizeConfig.getProportionateScreenWidth(45)
-                : SizeConfig.getProportionateScreenWidth(40);
+    // Tablet specific sizes
+    if (screenWidth >= 900 && screenWidth < 1200) {
+      headerHeight = 110;
+      profileSize = 46;
+      searchSize = 42;
+      fontSize = 20;
+    }
+    // Desktop sizes
+    else if (screenWidth >= 1200) {
+      headerHeight = 100;
+      profileSize = 42;
+      searchSize = 38;
+      fontSize = 18;
+    }
+    // Mobile sizes
+    else if (screenWidth > 600) {
+      headerHeight = 90;
+      profileSize = 38;
+      searchSize = 34;
+      fontSize = 16;
+    }
+    // Small mobile sizes
+    else {
+      headerHeight = 80;
+      profileSize = 38;
+      searchSize = 34;
+      fontSize = 16;
+    }
 
-            final fontSize = constraints.maxWidth > 360
-                ? SizeConfig.getProportionateScreenWidth(20)
-                : SizeConfig.getProportionateScreenWidth(16);
-
-            return Stack(
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          height: headerHeight,
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth > 600 ? 16 : 12,
+            vertical: screenWidth > 600 ? 12 : 8,
+          ),
+          decoration: const BoxDecoration(
+            color: Color(0xFF354EAB),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(28),
+              bottomRight: Radius.circular(28),
+            ),
+          ),
+          child: SafeArea(
+            child: Stack(
               alignment: Alignment.center,
               children: [
-                _HeaderTitle(
-                  name: name,
-                  fontSize: fontSize,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.getProportionateScreenWidth(20),
+                _buildHeaderTitle(widget.name, fontSize),
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: screenWidth > 600 ? 800 : double.infinity,
                   ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _ProfileImage(size: profileSize),
-                      _SearchButton(
-                        size: searchSize,
-                        onTap: onSearchTap,
-                      ),
+                      _buildProfileImage(profileSize),
+                      _buildSearchButton(searchSize),
                     ],
                   ),
                 ),
               ],
-            );
-          },
+            ),
+          ),
         ),
-      ),
+        const SizedBox(height: 8),
+        SearchBarWidget(
+          isVisible: _isSearchVisible,
+          onClose: _toggleSearch,
+        ),
+      ],
     );
   }
-}
 
-class _HeaderTitle extends StatelessWidget {
-  final String name;
-  final double fontSize;
-
-  const _HeaderTitle({
-    required this.name,
-    required this.fontSize,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
+  Widget _buildHeaderTitle(String name, double fontSize) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 400),
       child: Text(
         name,
         style: TextStyle(
@@ -99,20 +124,11 @@ class _HeaderTitle extends StatelessWidget {
       ),
     );
   }
-}
 
-class _ProfileImage extends StatelessWidget {
-  final double size;
-
-  const _ProfileImage({required this.size});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildProfileImage(double size) {
     return Container(
-      padding: EdgeInsets.all(SizeConfig.getProportionateScreenWidth(6)),
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-      ),
+      padding: const EdgeInsets.all(4),
+      decoration: const BoxDecoration(shape: BoxShape.circle),
       child: ClipOval(
         child: Image.asset(
           'assets/images/profile.png',
@@ -123,23 +139,12 @@ class _ProfileImage extends StatelessWidget {
       ),
     );
   }
-}
 
-class _SearchButton extends StatelessWidget {
-  final double size;
-  final VoidCallback? onTap;
-
-  const _SearchButton({
-    required this.size,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSearchButton(double size) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: _toggleSearch,
       child: Container(
-        padding: EdgeInsets.all(SizeConfig.getProportionateScreenWidth(8)),
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
         ),

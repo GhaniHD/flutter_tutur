@@ -102,13 +102,13 @@ Future<dynamic> upluoadFile(String endpoint, File file,{Map<String, dynamic>? da
 
 // error handling
   String _handleError(dynamic error) {
-    if (error is DioError) {
+    if (error is DioException) {
       switch (error.type) {
-        case DioErrorType.connectionTimeout: 
-        case DioErrorType.sendTimeout:
-        case DioErrorType.receiveTimeout:
+        case DioExceptionType.connectionTimeout: 
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
           return 'Connection timeout with server';
-        case DioErrorType.badResponse:
+        case DioExceptionType.badResponse:
           return 'Received invalid status code: ${error.response?.statusCode}';
           default:
           return 'network error';

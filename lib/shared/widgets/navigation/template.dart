@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class TemplateComponent extends StatelessWidget {
-  const TemplateComponent({Key? key}) : super(key: key);
+  const TemplateComponent({
+    super.key,
+  });
 
   void _showTemplateModal(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
@@ -103,7 +105,7 @@ class TemplateComponent extends StatelessWidget {
                                           constraints.maxWidth < 400 ? 8 : 12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
+                                          color: Color.fromRGBO(0, 0, 0, 0.2),
                                           offset: const Offset(2, 2),
                                           blurRadius: 4,
                                         ),
@@ -151,7 +153,7 @@ class TemplateComponent extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Color.fromRGBO(0, 0, 0, 0.2),
                               offset: const Offset(0, 2),
                               blurRadius: 4,
                             ),

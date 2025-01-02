@@ -5,10 +5,10 @@ class SentenceComponent extends StatelessWidget {
   final bool isExpanded;
 
   const SentenceComponent({
-    Key? key,
+    super.key,
     required this.controller,
     required this.isExpanded,
-  }) : super(key: key);
+  });
 
   // Breakpoints definition
   static const double mobilePortraitBreakpoint = 400;
