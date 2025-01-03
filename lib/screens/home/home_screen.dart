@@ -5,12 +5,14 @@ import '../../shared/widgets/headers/profile_header_widget.dart';
 import '../../shared/widgets/album/menu_grid_item.dart';
 import '../../shared/widgets/navigation/bottom_nav_bar.dart';
 import '../../data/models/album_item.dart';
+import '../../shared/widgets/navigation/favorite.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
   @override
   HomeScreenState createState() => HomeScreenState();
 }
+
 
 class HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
@@ -38,6 +40,7 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationWidget(
             selectedIndex: _selectedIndex,
+            favorites: favorites,
             onTap: (index) {
               setState(() {
                 _selectedIndex = index;
