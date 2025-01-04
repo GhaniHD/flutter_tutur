@@ -14,20 +14,20 @@ class Favorite extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final width = MediaQuery.of(context).size.width;
-          // Refined breakpoints
           final isDesktop = width >= 1200;
           final isLargeTablet = width >= 800 && width < 1200;
           final isSmallTablet = width >= 500 && width < 800;
-          final isMobile = width < 500;
+          final isMobile = width < 500 && width >= 360;
 
-          // Dynamic sizing based on screen width
           final containerHeight = isDesktop
               ? 800.0
               : isLargeTablet
                   ? 750.0
                   : isSmallTablet
                       ? 650.0
-                      : 600.0;
+                      : isMobile
+                          ? 550.0
+                          : 500.0;
 
           final gridColumns = isDesktop
               ? 6
@@ -43,7 +43,9 @@ class Favorite extends StatelessWidget {
                   ? 16.0
                   : isSmallTablet
                       ? 12.0
-                      : 8.0;
+                      : isMobile
+                          ? 8.0
+                          : 6.0;
 
           return Container(
             width: double.infinity,
@@ -124,7 +126,9 @@ class Favorite extends StatelessWidget {
                             ? 130
                             : isSmallTablet
                                 ? 110
-                                : 100,
+                                : isMobile
+                                    ? 90
+                                    : 80,
                     height: isDesktop
                         ? 48
                         : isLargeTablet
@@ -187,36 +191,42 @@ class FavoriteItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dynamic sizing based on screen width
     final isDesktop = screenWidth >= 1200;
     final isLargeTablet = screenWidth >= 800 && screenWidth < 1200;
     final isSmallTablet = screenWidth >= 500 && screenWidth < 800;
+    final isMobile = screenWidth < 500 && screenWidth >= 360;
 
     final imageSize = isDesktop
         ? 90.0
         : isLargeTablet
-            ? 85.0
+            ? 100.0
             : isSmallTablet
                 ? 65.0
-                : screenWidth <= 360
-                    ? 40.0
-                    : 45.0;
+                : isMobile
+                    ? 55.0
+                    : screenWidth <= 360
+                        ? 40.0
+                        : 45.0;
 
     final fontSize = isDesktop
         ? 16.0
         : isLargeTablet
-            ? 15.0
+            ? 18.0
             : isSmallTablet
                 ? 13.0
-                : screenWidth <= 360
-                    ? 9.0
-                    : 10.0;
+                : isMobile
+                    ? 11.0
+                    : screenWidth <= 360
+                        ? 9.0
+                        : 10.0;
 
     final spacing = isDesktop || isLargeTablet
-        ? 8.0
+        ? 1.0
         : isSmallTablet
             ? 4.0
-            : 2.0;
+            : isMobile
+                ? 0.1
+                : 0.5;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
@@ -229,28 +239,31 @@ class FavoriteItemWidget extends StatelessWidget {
             fit: BoxFit.cover,
           ),
           Positioned.fill(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  favorite.image,
-                  width: imageSize,
-                  height: imageSize,
-                  fit: BoxFit.contain,
-                ),
-                SizedBox(height: spacing),
-                Text(
-                  favorite.title,
-                  style: TextStyle(
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10), // Geser ke atas
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    favorite.image,
+                    width: imageSize,
+                    height: imageSize,
+                    fit: BoxFit.contain,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                  SizedBox(height: spacing),
+                  Text(
+                    favorite.title,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -260,7 +273,7 @@ class FavoriteItemWidget extends StatelessWidget {
 }
 
 final List<FavoriteItem> favorites = List.generate(
-  16, // Jumlah item yang diinginkan
+  16,
   (index) => FavoriteItem(
     title: 'Buah-buahan',
     image: 'assets/images/buah_buahan.png',
