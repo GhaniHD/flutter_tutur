@@ -37,6 +37,6 @@ class MyApp extends StatelessWidget {
 ThemeData _appTheme() {
   return ThemeData(
     primaryColor: const Color(0xFF3F51B5),
-    scaffoldBackgroundColor: const Color(0xFFEFF6FF),
+    scaffoldBackgroundColor: const Color(0xffEFF6FF),
   );
 }

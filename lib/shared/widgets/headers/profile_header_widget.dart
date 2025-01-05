@@ -25,40 +25,38 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
 
-    // Specific sizes for different screen widths
-    double headerHeight;
-    double profileSize;
-    double searchSize;
-    double fontSize;
+    // Menyesuaikan ukuran berdasarkan DPI perangkat
+    double scaleFactor = devicePixelRatio > 2.5 ? 1.2 : 1.0;
 
-    // Tablet specific sizes
-    if (screenWidth >= 900 && screenWidth < 1200) {
-      headerHeight = 110;
-      profileSize = 46;
-      searchSize = 42;
-      fontSize = 20;
+    // Ukuran default
+    double headerHeight = (screenHeight * 0.15) * scaleFactor;
+    double profileSize = (screenWidth * 0.15) * scaleFactor;
+    double searchSize = (screenWidth * 0.1) * scaleFactor;
+    double fontSize = (screenWidth * 0.045) * scaleFactor;
+
+    // Penyesuaian untuk tablet
+    if (screenWidth >= 1024 && screenWidth < 1200) {
+      headerHeight = 120 * scaleFactor;
+      profileSize = 60 * scaleFactor;
+      searchSize = 50 * scaleFactor;
+      fontSize = 20 * scaleFactor;
     }
-    // Desktop sizes
+    // Penyesuaian untuk desktop
     else if (screenWidth >= 1200) {
-      headerHeight = 100;
-      profileSize = 42;
-      searchSize = 38;
-      fontSize = 18;
+      headerHeight = 140 * scaleFactor;
+      profileSize = 70 * scaleFactor;
+      searchSize = 60 * scaleFactor;
+      fontSize = 24 * scaleFactor;
     }
-    // Mobile sizes
-    else if (screenWidth > 600) {
-      headerHeight = 90;
-      profileSize = 38;
-      searchSize = 34;
-      fontSize = 16;
-    }
-    // Small mobile sizes
-    else {
-      headerHeight = 80;
-      profileSize = 38;
-      searchSize = 34;
-      fontSize = 16;
+    // Penyesuaian untuk perangkat kecil
+    else if (screenWidth < 600) {
+      headerHeight = 100 * scaleFactor;
+      profileSize = 40 * scaleFactor;
+      searchSize = 40 * scaleFactor;
+      fontSize = 16 * scaleFactor;
     }
 
     return Column(
