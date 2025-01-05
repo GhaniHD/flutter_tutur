@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../screens/add_new/modals/add_album_modal.dart';
 import '../../../screens/add_new/add_new_card.dart';
-import '../../../screens/home/home_screen.dart'; // Import HomeScreen
 
 class AddNewHeader extends StatelessWidget {
   final String title;
@@ -31,8 +30,11 @@ class AddNewHeader extends StatelessWidget {
       Offset.zero & overlay.size,
     );
 
+    // Store context in local variable
+    final currentContext = context;
+
     showMenu<String>(
-      context: context,
+      context: currentContext,
       position: position,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       color: const Color(0xFF9BADF3),
@@ -45,19 +47,20 @@ class AddNewHeader extends StatelessWidget {
         _buildCustomMenuItem('Tambah Album'),
       ],
     ).then((String? value) {
-      if (value != null) {
+      if (value != null && currentContext.mounted) {
         if (value == 'Tambah Kartu') {
           Navigator.push(
-            context,
+            currentContext,
             MaterialPageRoute(
               builder: (context) => const AddNewCardScreen(),
             ),
           );
         } else if (value == 'Tambah Album') {
           showDialog(
-            context: context,
+            context: currentContext,
             barrierDismissible: true,
-            barrierColor: Colors.black.withOpacity(0.5),
+            barrierColor: Colors.black
+                .withAlpha(128), // Using withAlpha instead of withOpacity
             builder: (BuildContext context) {
               return const AddAlbumModal();
             },
@@ -80,8 +83,8 @@ class AddNewHeader extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           gradient: LinearGradient(
             colors: [
-              Colors.white.withOpacity(0.3),
-              Colors.white.withOpacity(0.1),
+              Colors.white.withAlpha(77), // 0.3 opacity = 77 alpha
+              Colors.white.withAlpha(26), // 0.1 opacity = 26 alpha
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -143,20 +146,10 @@ class AddNewHeader extends StatelessWidget {
           ),
           Row(
             children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomeScreen(),
-                    ),
-                  );
-                },
-                child: Image.asset(
-                  'assets/images/home.png',
-                  width: iconSize,
-                  height: iconSize,
-                ),
+              Image.asset(
+                'assets/images/home.png',
+                width: iconSize,
+                height: iconSize,
               ),
               const SizedBox(width: 16),
               GestureDetector(

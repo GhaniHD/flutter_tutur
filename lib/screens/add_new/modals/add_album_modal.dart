@@ -80,7 +80,7 @@ class _AddAlbumModalState extends State<AddAlbumModal> {
                   width: imageSize,
                   height: imageSize,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: _image != null
@@ -128,7 +128,7 @@ class _AddAlbumModalState extends State<AddAlbumModal> {
                   const SizedBox(height: 8),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: TextField(
