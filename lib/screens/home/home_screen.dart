@@ -1,18 +1,17 @@
-// lib/screens/home/home_screen.dart
 import 'package:flutter/material.dart';
 import '../../core/constants/size_config.dart';
 import '../../shared/widgets/headers/profile_header_widget.dart';
-import '../../shared/widgets/album/menu_grid_item.dart';
 import '../../shared/widgets/navigation/bottom_nav_bar.dart';
-import '../../data/models/album_item.dart';
 import '../../shared/widgets/navigation/favorite.dart';
+import '../../shared/widgets/album/album_grid.dart';
+import '../../data/models/album_item.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+  
   @override
   HomeScreenState createState() => HomeScreenState();
 }
-
 
 class HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
@@ -36,7 +35,7 @@ class HomeScreenState extends State<HomeScreen> {
             name: 'Rifky Adi taqwim',
           ),
           Expanded(
-            child: AlbumGridWidget(albums: _albums),
+            child: AlbumGridWidget(albums: _albums),  // Using the new grid widget
           ),
           BottomNavigationWidget(
             selectedIndex: _selectedIndex,
