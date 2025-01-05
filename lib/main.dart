@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:project_tutur/screens/home/home_screen.dart';
-
+import 'package:project_tutur/screens/add_new/add_screen.dart';
 
 void main() {
   _setSystemUIOverlayStyle();
@@ -28,7 +28,10 @@ class MyApp extends StatelessWidget {
       title: 'TUTUR',
       debugShowCheckedModeBanner: false,
       theme: _appTheme(),
-      home: HomeScreen(),
+      home: const HomeScreen(),
+      routes: {
+        '/addscreen': (context) => AddScreen(),
+      },
     );
   }
 }

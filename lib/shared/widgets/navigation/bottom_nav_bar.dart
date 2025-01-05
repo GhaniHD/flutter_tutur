@@ -1,4 +1,3 @@
-// bottom_navigation_widget.dart
 import 'package:flutter/material.dart';
 import '../../../data/models/favorite_item.dart';
 import 'favorite.dart';
@@ -55,7 +54,9 @@ class BottomNavigationWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         onTap(index);
-        if (index == 2) {
+        if (index == 0) {
+          Navigator.pushNamed(context, '/addscreen'); // Navigasi ke AddScreen
+        } else if (index == 2) {
           _showFavoriteDialog(context);
         }
       },
