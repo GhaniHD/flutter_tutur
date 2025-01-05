@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../screens/add_new/modals/add_album_modal.dart';
-import '../../../screens/add_new/add_new_card.dart';
+import '../../../main.dart';
 
 class AddNewHeader extends StatelessWidget {
   final String title;
@@ -30,7 +30,6 @@ class AddNewHeader extends StatelessWidget {
       Offset.zero & overlay.size,
     );
 
-    // Store context in local variable
     final currentContext = context;
 
     showMenu<String>(
@@ -49,18 +48,15 @@ class AddNewHeader extends StatelessWidget {
     ).then((String? value) {
       if (value != null && currentContext.mounted) {
         if (value == 'Tambah Kartu') {
-          Navigator.push(
-            currentContext,
-            MaterialPageRoute(
-              builder: (context) => const AddNewCardScreen(),
-            ),
-          );
+  Navigator.pushNamed(
+    currentContext,
+    Routes.addNewCard, // Gunakan route yang benar
+  );
         } else if (value == 'Tambah Album') {
           showDialog(
             context: currentContext,
             barrierDismissible: true,
-            barrierColor: Colors.black
-                .withAlpha(128), // Using withAlpha instead of withOpacity
+            barrierColor: Colors.black.withAlpha(128),
             builder: (BuildContext context) {
               return const AddAlbumModal();
             },
@@ -83,8 +79,8 @@ class AddNewHeader extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           gradient: LinearGradient(
             colors: [
-              Colors.white.withAlpha(77), // 0.3 opacity = 77 alpha
-              Colors.white.withAlpha(26), // 0.1 opacity = 26 alpha
+              Colors.white.withAlpha(77),
+              Colors.white.withAlpha(26),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -146,10 +142,15 @@ class AddNewHeader extends StatelessWidget {
           ),
           Row(
             children: [
-              Image.asset(
-                'assets/images/home.png',
-                width: iconSize,
-                height: iconSize,
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+                child: Image.asset(
+                  'assets/images/home.png',
+                  width: iconSize,
+                  height: iconSize,
+                ),
               ),
               const SizedBox(width: 16),
               GestureDetector(

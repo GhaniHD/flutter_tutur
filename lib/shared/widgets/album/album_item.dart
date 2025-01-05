@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../data/models/album_item.dart';
-import '../../../screens/cards/cards_screen.dart';
 
 class AlbumItemWidget extends StatelessWidget {
   final AlbumItem album;
@@ -14,11 +13,10 @@ class AlbumItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => CardsScreen(album: album),
-          ),
+          '/cardscreen',
+          arguments: album,
         );
       },
       child: Stack(
