@@ -2,17 +2,26 @@ import 'package:flutter/material.dart';
 import '../../data/models/album_item.dart';
 import '../../shared/widgets/album/album_grid.dart';
 import '../../shared/widgets/headers/add_new_header.dart';
+import '../../core/api/api_provider.dart';
 
-class AddScreen extends StatelessWidget {
-  final List<AlbumItem> albums = List.generate(
-    18,
-    (index) => AlbumItem(
-      title: 'Buah-buahan',
-      backgroundPath: 'assets/images/blue.png',  // gunakan backgroundPath
-      iconPath: 'assets/images/buah_buahan.png', // gunakan iconPath
+class AddScreen extends StatefulWidget {
+  const AddScreen({super.key});
+
+  @override
+  State<AddScreen> createState() => _AddScreenState();
+}
+
+class _AddScreenState extends State<AddScreen> {
+  // Daftar album statis untuk tampilan Add Cards
+  final List<AlbumItem> albums = [
+    AlbumItem(
+      id: 1,
+      name: 'Buah-buahan',
+      userId: 1,
+      picture: 'assets/images/buah_buahan.png', // Menggunakan asset lokal
     ),
-  );
-  AddScreen({super.key});
+    // Tambahkan item statis lainnya sesuai kebutuhan
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +35,7 @@ class AddScreen extends StatelessWidget {
             ),
             Expanded(
               child: AlbumGridWidget(
-                albums: albums,
+                albums: albums, // Menggunakan daftar statis
               ),
             ),
           ],

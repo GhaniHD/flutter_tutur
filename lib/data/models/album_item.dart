@@ -1,12 +1,23 @@
 // lib/data/models/album_item.dart
 class AlbumItem {
-  final String title;
-  final String backgroundPath; // untuk blue.png
-  final String iconPath; // untuk gambar buah
+  final int id;
+  final String name;
+  final String? picture;
+  final int userId;
 
   AlbumItem({
-    required this.title,
-    required this.backgroundPath,
-    required this.iconPath,
+    required this.id,
+    required this.name,
+    this.picture,
+    required this.userId,
   });
+
+  factory AlbumItem.fromJson(Map<String, dynamic> json) {
+    return AlbumItem(
+      id: json['id'],
+      name: json['name'],
+      picture: json['picture'],
+      userId: json['user_id'],
+    );
+  }
 }

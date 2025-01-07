@@ -38,7 +38,7 @@ class _CardsScreenState extends State<CardsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Album ${widget.album.title}',
+          'Album ${widget.album.name}',
           style: const TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,

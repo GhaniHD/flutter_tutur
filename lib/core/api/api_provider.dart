@@ -1,7 +1,5 @@
-// File: lib/core/api/api_provider.dart
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
-
 
 class ApiProvider {
   static final ApiProvider _instance = ApiProvider._internal();
@@ -32,7 +30,6 @@ class ApiProvider {
       receiveTimeout: const Duration(seconds: 3),
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
     );
@@ -63,6 +60,7 @@ class ApiProvider {
           headers: {
             'Authorization': 'Bearer $token',
             'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
           },
         ),
       );
@@ -79,7 +77,11 @@ class ApiProvider {
         path,
         data: data,
         options: Options(
-          headers: {'Authorization': 'Bearer $token'},
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
         ),
       );
       return response.data;
@@ -94,7 +96,10 @@ class ApiProvider {
       final response = await dio.get(
         path,
         options: Options(
-          headers: {'Authorization': 'Bearer $token'},
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+          },
         ),
       );
       return response.data;
@@ -110,7 +115,11 @@ class ApiProvider {
         path,
         data: data,
         options: Options(
-          headers: {'Authorization': 'Bearer $token'},
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
         ),
       );
       return response.data;
@@ -125,7 +134,10 @@ class ApiProvider {
       final response = await dio.delete(
         path,
         options: Options(
-          headers: {'Authorization': 'Bearer $token'},
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+          },
         ),
       );
       return response.data;

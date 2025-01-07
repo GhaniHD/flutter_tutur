@@ -5,24 +5,51 @@ import '../../shared/widgets/navigation/bottom_nav_bar.dart';
 import '../../shared/widgets/navigation/favorite.dart';
 import '../../shared/widgets/album/album_grid.dart';
 import '../../data/models/album_item.dart';
+import '../../core/api/api_provider.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-  
+
   @override
   HomeScreenState createState() => HomeScreenState();
 }
 
 class HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  final List<AlbumItem> _albums = List.generate(
-    18,
-    (index) => AlbumItem(
-      title: 'Buah-buahan',
-      backgroundPath: 'assets/images/blue.png',
-      iconPath: 'assets/images/buah_buahan.png',
-    ),
-  );
+  final ApiProvider _apiProvider = ApiProvider();
+  List<AlbumItem> _albums = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAlbums();
+  }
+
+  Future<void> _loadAlbums() async {
+    try {
+      await _apiProvider.init();
+      final response = await _apiProvider.get('/albums');
+
+      setState(() {
+        _albums =
+            (response as List).map((item) => AlbumItem.fromJson(item)).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading albums: $e');
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Gagal memuat album')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +62,12 @@ class HomeScreenState extends State<HomeScreen> {
             name: 'Rifky Adi taqwim',
           ),
           Expanded(
-            child: AlbumGridWidget(albums: _albums),  // Using the new grid widget
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : RefreshIndicator(
+                    onRefresh: _loadAlbums,
+                    child: AlbumGridWidget(albums: _albums),
+                  ),
           ),
           BottomNavigationWidget(
             selectedIndex: _selectedIndex,
