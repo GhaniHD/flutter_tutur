@@ -56,7 +56,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/
     - assets/images/blue.png
     - assets/images/add_new.png
     - assets/images/sentence.png
