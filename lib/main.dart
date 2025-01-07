@@ -3,11 +3,23 @@ import 'package:flutter/services.dart';
 import 'package:project_tutur/screens/home/home_screen.dart';
 import 'package:project_tutur/screens/add_new/add_screen.dart';
 import 'package:project_tutur/screens/cards/cards_screen.dart';
-import 'package:project_tutur/screens/add_new/add_new_card.dart'; // Tambahkan import ini
+import 'package:project_tutur/screens/add_new/add_new_card.dart';
 import 'package:project_tutur/data/models/album_item.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() {
+  // Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Configure for web if running on web platform
+if (kIsWeb) {
+    setUrlStrategy(PathUrlStrategy());
+  }
+
+  // Set system UI overlay style
   _setSystemUIOverlayStyle();
+
   runApp(const MyApp());
 }
 
@@ -25,7 +37,7 @@ class Routes {
   static const String home = '/home';
   static const String addScreen = '/addscreen';
   static const String cardScreen = '/cardscreen';
-  static const String addNewCard ='/add-new-card'; 
+  static const String addNewCard = '/add-new-card';
 }
 
 class MyApp extends StatelessWidget {
@@ -50,7 +62,7 @@ class MyApp extends StatelessWidget {
               builder: (context) => AddScreen(),
             );
 
-          case Routes.addNewCard: 
+          case Routes.addNewCard:
             return MaterialPageRoute(
               builder: (context) => const AddNewCardScreen(),
             );

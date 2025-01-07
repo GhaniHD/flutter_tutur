@@ -1,119 +1,159 @@
+// File: lib/core/api/api_provider.dart
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
-import 'dart:io';
 
-// api provider
+
 class ApiProvider {
   static final ApiProvider _instance = ApiProvider._internal();
   factory ApiProvider() => _instance;
   ApiProvider._internal();
 
-// create dio instance
   final dio = Dio();
+  String? _token;
 
-// configure dio
-  void configureDio() {
+  // Dummy token for testing
+  static const String _dummyToken = 'dummy-token';
+
+  Future<void> init() async {
+    _token = _dummyToken;
+    await configureDio();
+  }
+
+  Future<String?> getToken() async {
+    return _token ?? _dummyToken;
+  }
+
+  Future<void> configureDio() async {
+    final token = await getToken();
+
     dio.options = BaseOptions(
-      baseUrl: 'http://127.0.0.1:8000',
-      connectTimeout: Duration(seconds: 5),
-      receiveTimeout: Duration(seconds: 3),
+      baseUrl: 'http://127.0.0.1:8000/api',
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 3),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
       },
     );
 
-// log request and response
     if (kDebugMode) {
-      dio.interceptors
-          .add(LogInterceptor(responseBody: true,
-          requestBody: true,
-        ));
-      }
+      dio.interceptors.add(LogInterceptor(
+        responseBody: true,
+        requestBody: true,
+      ));
     }
 
-
-// upload file 
-Future<dynamic> upluoadFile(String endpoint, File file,{Map<String, dynamic>? data}) async {
-  try {
-   String fileName = file.path.split('/').last;
-   FormData formData = FormData.fromMap({
-     'image': await MultipartFile.fromFile(
-      file.path,
-      filename: fileName
-      ),
-     if (data != null) ...data,
-   });
-
-   final response = await dio.post(
-    endpoint, 
-    data: formData,
-    options : Options(
-      headers: {
-      'content-Type' : 'multipart/form-data',
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final token = await getToken();
+        options.headers['Authorization'] = 'Bearer $token';
+        return handler.next(options);
       },
-    ),
-  );
-    return response.data;
-  } catch (e) {
-    throw _handleError(e);
+    ));
   }
-}
 
-// get
-  Future<dynamic> get(String endpoint) async {
+  Future<dynamic> postFormData(String path, FormData formData) async {
     try {
-      final response = await dio.get(endpoint);
+      final token = await getToken();
+      final response = await dio.post(
+        path,
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+          },
+        ),
+      );
       return response.data;
     } catch (e) {
       throw _handleError(e);
     }
   }
 
-// post
   Future<dynamic> post(String path, dynamic data) async {
     try {
-      final response = await ApiProvider().dio.post(path, data: data);
+      final token = await getToken();
+      final response = await dio.post(
+        path,
+        data: data,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
       return response.data;
     } catch (e) {
       throw _handleError(e);
     }
   }
 
-// put
+  Future<dynamic> get(String path) async {
+    try {
+      final token = await getToken();
+      final response = await dio.get(
+        path,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+      return response.data;
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   Future<dynamic> put(String path, dynamic data) async {
     try {
-      final response = await ApiProvider().dio.put(path, data: data);
+      final token = await getToken();
+      final response = await dio.put(
+        path,
+        data: data,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
       return response.data;
     } catch (e) {
       throw _handleError(e);
     }
   }
 
-// delete
   Future<dynamic> delete(String path) async {
     try {
-      final response = await ApiProvider().dio.delete(path);
+      final token = await getToken();
+      final response = await dio.delete(
+        path,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
       return response.data;
     } catch (e) {
       throw _handleError(e);
     }
   }
 
-// error handling
   String _handleError(dynamic error) {
     if (error is DioException) {
       switch (error.type) {
-        case DioExceptionType.connectionTimeout: 
+        case DioExceptionType.connectionTimeout:
         case DioExceptionType.sendTimeout:
         case DioExceptionType.receiveTimeout:
-          return 'Connection timeout with server';
+          return 'Koneksi timeout, silakan coba lagi';
         case DioExceptionType.badResponse:
-          return 'Received invalid status code: ${error.response?.statusCode}';
-          default:
-          return 'network error';
-     }
+          if (error.response?.data != null) {
+            if (error.response?.data['error'] != null) {
+              return error.response?.data['error'];
+            } else if (error.response?.data['message'] != null) {
+              return error.response?.data['message'];
+            }
+          }
+          return 'Terjadi kesalahan pada server';
+        default:
+          return 'Terjadi kesalahan jaringan';
+      }
     }
-    return 'unexpected error';
+    return 'Terjadi kesalahan yang tidak diketahui';
   }
 }
