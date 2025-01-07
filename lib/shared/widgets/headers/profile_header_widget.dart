@@ -64,6 +64,7 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
         Container(
           width: double.infinity,
           height: headerHeight,
+          margin: EdgeInsets.only(top: 20),
           padding: EdgeInsets.symmetric(
             horizontal: screenWidth > 600 ? 16 : 12,
             vertical: screenWidth > 600 ? 12 : 8,
