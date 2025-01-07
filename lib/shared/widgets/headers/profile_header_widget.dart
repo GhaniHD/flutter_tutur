@@ -53,7 +53,7 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
     }
     // Penyesuaian untuk perangkat kecil
     else if (screenWidth < 600) {
-      headerHeight = 120 * scaleFactor;
+      headerHeight = 125 * scaleFactor;
       profileSize = 40 * scaleFactor;
       searchSize = 40 * scaleFactor;
       fontSize = 16 * scaleFactor;
@@ -64,7 +64,6 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
         Container(
           width: double.infinity,
           height: headerHeight,
-          margin: EdgeInsets.only(top: 20),
           padding: EdgeInsets.symmetric(
             horizontal: screenWidth > 600 ? 16 : 12,
             vertical: screenWidth > 600 ? 12 : 8,
