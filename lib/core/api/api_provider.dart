@@ -142,6 +142,16 @@ class ApiProvider {
     }
   }
 
+ Future<dynamic> search(String query) async {
+    try {
+      final response =
+          await dio.get('/search', queryParameters: {'query': query});
+      return response.data;
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   String _handleError(dynamic error) {
     if (error is DioException) {
       switch (error.type) {
