@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ApiProvider {
   // Singleton instance
@@ -104,14 +105,16 @@ class ApiProvider {
 
   Future<dynamic> get(String path, [Map<String, dynamic>? params]) async {
     try {
+      final token = await getToken();
       final response = await dio.get(
         path,
         options: Options(
           headers: {
+            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
           },
         ),
-        queryParameters: params,
+        
       );
       return response.data;
     } catch (e) {
@@ -119,63 +122,64 @@ class ApiProvider {
     }
   }
 
-  /// Mengirim data JSON via PUT
-  Future<dynamic> put(String path, dynamic data) async {
-    try {
-      final response = await dio.put(
-        path,
-        data: data,
-        options: Options(
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-      return response.data;
-    } catch (e) {
-      throw _handleError(e);
-    }
-  }
-
-  /// Menghapus data
-  Future<dynamic> delete(String path) async {
-    try {
-      final response = await dio.delete(
-        path,
-        options: Options(
-          headers: {
-            'Accept': 'application/json',
-          },
-        ),
-      );
-      return response.data;
-    } catch (e) {
-      throw _handleError(e);
-    }
-  }
-
-  /// Menangani kesalahan
-  String _handleError(dynamic error) {
-    if (error is DioException) {
-      switch (error.type) {
-        case DioExceptionType.connectionTimeout:
-        case DioExceptionType.sendTimeout:
-        case DioExceptionType.receiveTimeout:
-          return 'Koneksi timeout, silakan coba lagi';
-        case DioExceptionType.badResponse:
-          if (error.response?.data != null) {
-            if (error.response?.data['error'] != null) {
-              return error.response?.data['error'];
-            } else if (error.response?.data['message'] != null) {
-              return error.response?.data['message'];
-            }
-          }
-          return 'Terjadi kesalahan pada server';
-        default:
-          return 'Terjadi kesalahan jaringan';
+    /// Mengirim data JSON via PUT
+    Future<dynamic> put(String path, dynamic data) async {
+      try {
+        final response = await dio.put(
+          path,
+          data: data,
+          options: Options(
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ),
+        );
+        return response.data;
+      } catch (e) {
+        throw _handleError(e);
       }
     }
-    return 'Terjadi kesalahan yang tidak diketahui';
+
+    /// Menghapus data
+    Future<dynamic> delete(String path) async {
+      try {
+        final response = await dio.delete(
+          path,
+          options: Options(
+            headers: {
+              'Accept': 'application/json',
+            },
+          ),
+        );
+        return response.data;
+      } catch (e) {
+        throw _handleError(e);
+      }
+    }
+
+    /// Menangani kesalahan
+    String _handleError(dynamic error) {
+      if (error is DioException) {
+        switch (error.type) {
+          case DioExceptionType.connectionTimeout:
+          case DioExceptionType.sendTimeout:
+          case DioExceptionType.receiveTimeout:
+            return 'Koneksi timeout, silakan coba lagi';
+          case DioExceptionType.badResponse:
+            if (error.response?.data != null) {
+              if (error.response?.data['error'] != null) {
+                return error.response?.data['error'];
+              } else if (error.response?.data['message'] != null) {
+                return error.response?.data['message'];
+              }
+            }
+            return 'Terjadi kesalahan pada server';
+          default:
+            return 'Terjadi kesalahan jaringan';
+        }
+      }
+      return 'Terjadi kesalahan yang tidak diketahui';
+    }
   }
-}
+
