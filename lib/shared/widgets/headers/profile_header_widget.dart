@@ -51,11 +51,20 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
       searchSize = 60 * scaleFactor;
       fontSize = 24 * scaleFactor;
     }
+
+     else if (screenWidth >= 600 && screenWidth < 1024) {
+      headerHeight = 125 * scaleFactor;
+      profileSize = 70 * scaleFactor;
+      searchSize = 60 * scaleFactor;
+      fontSize = 24 * scaleFactor;
+    }
+
+
     // Penyesuaian untuk perangkat kecil
     else if (screenWidth < 600) {
       headerHeight = 125 * scaleFactor;
-      profileSize = 40 * scaleFactor;
-      searchSize = 40 * scaleFactor;
+      profileSize = 43 * scaleFactor;
+      searchSize = 38 * scaleFactor;
       fontSize = 16 * scaleFactor;
     }
 

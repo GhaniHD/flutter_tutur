@@ -2,8 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 
 class ApiProvider {
+  // Singleton instance
   static final ApiProvider _instance = ApiProvider._internal();
+
   factory ApiProvider() => _instance;
+
   ApiProvider._internal();
 
   final dio = Dio();
@@ -12,28 +15,40 @@ class ApiProvider {
   // Dummy token for testing
   static const String _dummyToken = 'dummy-token';
 
+  /// Inisialisasi token dan konfigurasi Dio
   Future<void> init() async {
     _token = _dummyToken;
     await configureDio();
   }
 
+  /// Mengambil token saat ini
   Future<String?> getToken() async {
     return _token ?? _dummyToken;
   }
 
+  /// Konfigurasi awal untuk Dio
   Future<void> configureDio() async {
     final token = await getToken();
 
+    // Menentukan URL API berdasarkan platform
+    String baseUrl = '';
+    if (kIsWeb) {
+      baseUrl = 'http://localhost:8000/api'; // Untuk Web
+    } else {
+      baseUrl = 'http://10.0.2.2:8000/api'; // Untuk Emulator
+    }
+
     dio.options = BaseOptions(
-      baseUrl: 'http://127.0.0.1:8000/api',
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 3),
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 7),
+      receiveTimeout: const Duration(seconds: 7),
       headers: {
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
     );
 
+    // Interceptor untuk logging hanya pada mode debug
     if (kDebugMode) {
       dio.interceptors.add(LogInterceptor(
         responseBody: true,
@@ -41,6 +56,7 @@ class ApiProvider {
       ));
     }
 
+    // Menambahkan header Authorization secara dinamis
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         final token = await getToken();
@@ -50,15 +66,14 @@ class ApiProvider {
     ));
   }
 
+  /// Mengirim data dengan tipe multipart/form-data
   Future<dynamic> postFormData(String path, FormData formData) async {
     try {
-      final token = await getToken();
       final response = await dio.post(
         path,
         data: formData,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
             'Content-Type': 'multipart/form-data',
           },
@@ -70,15 +85,14 @@ class ApiProvider {
     }
   }
 
+  /// Mengirim data JSON via POST
   Future<dynamic> post(String path, dynamic data) async {
     try {
-      final token = await getToken();
       final response = await dio.post(
         path,
         data: data,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
@@ -90,14 +104,13 @@ class ApiProvider {
     }
   }
 
+  /// Mengambil data dari server
   Future<dynamic> get(String path) async {
     try {
-      final token = await getToken();
       final response = await dio.get(
         path,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
           },
         ),
@@ -108,15 +121,14 @@ class ApiProvider {
     }
   }
 
+  /// Mengirim data JSON via PUT
   Future<dynamic> put(String path, dynamic data) async {
     try {
-      final token = await getToken();
       final response = await dio.put(
         path,
         data: data,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
@@ -128,14 +140,13 @@ class ApiProvider {
     }
   }
 
+  /// Menghapus data
   Future<dynamic> delete(String path) async {
     try {
-      final token = await getToken();
       final response = await dio.delete(
         path,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
           },
         ),
@@ -146,6 +157,7 @@ class ApiProvider {
     }
   }
 
+  /// Menangani kesalahan
   String _handleError(dynamic error) {
     if (error is DioException) {
       switch (error.type) {

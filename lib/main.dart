@@ -5,7 +5,6 @@ import 'package:project_tutur/screens/add_new/add_screen.dart';
 import 'package:project_tutur/screens/cards/cards_screen.dart';
 import 'package:project_tutur/screens/add_new/add_new_card.dart';
 import 'package:project_tutur/data/models/album_item.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() {
@@ -13,8 +12,10 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Configure for web if running on web platform
-if (kIsWeb) {
-    setUrlStrategy(PathUrlStrategy());
+  if (kIsWeb) {
+    // Web-specific configurations (without using flutter_web_plugins)
+    // For example, setting URL strategy for web can go here
+    // setUrlStrategy(PathUrlStrategy());
   }
 
   // Set system UI overlay style
