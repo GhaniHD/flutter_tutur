@@ -3,50 +3,43 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ApiProvider {
-  // Singleton instance
   static final ApiProvider _instance = ApiProvider._internal();
-
   factory ApiProvider() => _instance;
-
   ApiProvider._internal();
 
   final Dio dio = Dio();
   String? _token;
 
-  /// Base URL tunggal
   static String get baseUrl {
     if (kIsWeb) {
-      return 'http://localhost:8000/api'; // Untuk Web
+      return 'http://localhost:8000/api';
     }
-    return 'http://10.0.2.2:8000/api'; // Untuk Emulator Android
+    return 'http://10.0.2.2:8000/api';
   }
 
-  /// Inisialisasi ApiProvider dan token
   Future<void> init() async {
     _token = await FirebaseAuth.instance.currentUser?.getIdToken();
     await configureDio();
   }
 
-  /// Mengambil token saat ini
   Future<String?> getToken() async {
     return _token ?? await FirebaseAuth.instance.currentUser?.getIdToken();
   }
 
-  /// Konfigurasi awal untuk Dio
   Future<void> configureDio() async {
     final token = await getToken();
 
     dio.options = BaseOptions(
       baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 3),
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 30),
       headers: {
         'Accept': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',
       },
     );
 
-    // Interceptor untuk logging hanya pada mode debug
     if (kDebugMode) {
       dio.interceptors.add(LogInterceptor(
         responseBody: true,
@@ -54,7 +47,6 @@ class ApiProvider {
       ));
     }
 
-    // Menambahkan header Authorization secara dinamis
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         final token = await getToken();
@@ -66,8 +58,7 @@ class ApiProvider {
     ));
   }
 
-  /// Mengirim data dengan tipe multipart/form-data
-  Future<dynamic> postFormData(String path, FormData formData) async {
+  Future<Response> postFormData(String path, FormData formData) async {
     try {
       final response = await dio.post(
         path,
@@ -77,15 +68,16 @@ class ApiProvider {
             'Accept': 'application/json',
             'Content-Type': 'multipart/form-data',
           },
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
         ),
       );
-      return response.data;
+      return response;
     } catch (e) {
       throw _handleError(e);
     }
   }
 
-  /// Mengirim data JSON via POST
   Future<dynamic> post(String path, dynamic data) async {
     try {
       final response = await dio.post(
@@ -116,7 +108,6 @@ class ApiProvider {
     }
   }
 
-  /// Mengirim data JSON via PUT
   Future<dynamic> put(String path, dynamic data) async {
     try {
       final response = await dio.put(
@@ -135,7 +126,6 @@ class ApiProvider {
     }
   }
 
-  /// Menghapus data
   Future<dynamic> delete(String path) async {
     try {
       final response = await dio.delete(
@@ -152,7 +142,6 @@ class ApiProvider {
     }
   }
 
-  /// Menangani kesalahan
   String _handleError(dynamic error) {
     if (error is DioException) {
       switch (error.type) {
