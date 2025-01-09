@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:project_tutur/screens/home/home_screen.dart';
 import 'package:project_tutur/screens/add_new/add_screen.dart';
 import 'package:project_tutur/screens/cards/cards_screen.dart';
@@ -11,18 +12,26 @@ import 'package:provider/provider.dart';
 import 'auth/providers/auth_provider.dart';
 import 'core/api/api_provider.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inisialisasi Firebase
-  try {
-    await Firebase.initializeApp();
-    // Inisialisasi ApiProvider
-    await ApiProvider().init();
-  } catch (e) {
-    print("Error during initialization: $e");
-  }
+  const clientId = '690489905561-hl3gavg51mkm5t946gt8b0gs62fb5pv1.apps.googleusercontent.com';
+  GoogleSignIn(clientId: clientId);
 
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+        apiKey: "AIzaSyBHgt88IBXpOuQM0T6lqiyBpyOBRpnBK-c",
+        authDomain: "tutur-api.firebaseapp.com",
+        projectId: "tutur-api",
+        storageBucket: "tutur-api.firebasestorage.app",
+        messagingSenderId: "690489905561",
+        appId: "1:690489905561:web:19a02fde34b6c7594d4308",
+        measurementId: "G-FQ0RJHECPN"
+    ),
+  );
+
+  await ApiProvider().init();
   runApp(const MyApp());
 }
 
