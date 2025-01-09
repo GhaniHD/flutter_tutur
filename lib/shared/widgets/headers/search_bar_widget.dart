@@ -21,24 +21,24 @@ class SearchBarWidget extends StatefulWidget {
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
   final TextEditingController _controller = TextEditingController();
-  List<AlbumItem> _searchResults = []; // Daftar hasil pencarian
+  List<AlbumItem> _searchResults = [];
 
-  Future<void> _search(String query) async {
+  Future<void> searchAlbums(String query) async {
     try {
       final result = await ApiProvider().search(query);
 
-      // Parsing data yang diterima dari API
+      // Parsing data yang diterima
       List<AlbumItem> fetchedAlbums =
           (result['albums'] ?? []).map<AlbumItem>((album) {
         return AlbumItem.fromJson(album);
       }).toList();
 
-      // Menyaring album berdasarkan query pencarian
-      setState(() {
-        _searchResults = fetchedAlbums.where((album) {
-          return album.name.toLowerCase().contains(query.toLowerCase());
-        }).toList();
-      });
+      // Menyaring album berdasarkan query
+      _searchResults = fetchedAlbums.where((album) {
+        return album.name.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+
+      setState(() {}); // Memperbarui tampilan setelah penyaringan
     } catch (e) {
       print('Error: $e');
     }
@@ -49,7 +49,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
-      height: widget.isVisible ? 80 : 0, // Menentukan tinggi container
+      height: widget.isVisible ? 80 : 0,
       child: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
         child: Center(
@@ -76,11 +76,11 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                   style: const TextStyle(fontSize: 14),
                   onChanged: (query) {
                     if (query.isNotEmpty) {
-                      _search(query); // Memulai pencarian saat mengetik
+                      searchAlbums(query); // Pencarian dilakukan di sini
                     } else {
                       setState(() {
                         _searchResults
-                            .clear(); // Membersihkan hasil pencarian jika query kosong
+                            .clear(); // Hapus hasil pencarian saat input kosong
                       });
                     }
                   },
@@ -122,10 +122,5 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
     );
   }
 
-  // Menampilkan album terurut di AlbumGridWidget
-  Widget _buildAlbumGrid() {
-    return AlbumGridWidget(
-      albums: _searchResults, // Mengirimkan album yang sudah terurut
-    );
-  }
+  // Hapus fungsi _buildAlbumGrid karena sudah tidak digunakan lagi
 }
