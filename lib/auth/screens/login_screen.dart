@@ -6,6 +6,7 @@ import '../../screens/home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -19,9 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         final success = await context.read<AuthProvider>().login(
-          _emailController.text,
-          _passwordController.text,
-        );
+              _emailController.text.trim(),
+              _passwordController.text,
+            );
         if (success && mounted) {
           Navigator.pushReplacement(
             context,
@@ -31,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString())),
+            SnackBar(content: Text('Error: ${e.toString()}')),
           );
         }
       }
@@ -44,16 +45,23 @@ class _LoginScreenState extends State<LoginScreen> {
       if (success && mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
+          SnackBar(content: Text('Error: ${e.toString()}')),
         );
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -68,21 +76,47 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Email Field
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    validator: (value) =>
-                    value?.isEmpty ?? true ? 'Email diperlukan' : null,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email diperlukan';
+                      }
+                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Format email tidak valid';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
+
+                  // Password Field
                   TextFormField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                    ),
                     obscureText: true,
-                    validator: (value) =>
-                    value?.isEmpty ?? true ? 'Kata sandi diperlukan' : null,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Kata sandi diperlukan';
+                      }
+                      if (value.length < 6) {
+                        return 'Kata sandi minimal 6 karakter';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 24),
+
+                  // Loading or Buttons
                   if (auth.isLoading)
                     const CircularProgressIndicator()
                   else
@@ -100,6 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                   const SizedBox(height: 24),
+
+                  // Navigate to Register
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -108,7 +144,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterScreen(),
+                            ),
                           );
                         },
                         child: const Text('Daftar'),

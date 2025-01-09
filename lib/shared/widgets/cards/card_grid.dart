@@ -1,10 +1,10 @@
-// lib/widgets/cards/card_grid.dart
-
 import 'package:flutter/material.dart';
 import 'card_item.dart';
 
 class CardGrid extends StatelessWidget {
-  const CardGrid({super.key});
+  final List<CardItem> cardItems; // Mengambil cardItems dari luar
+
+  const CardGrid({super.key, required this.cardItems});
 
   @override
   Widget build(BuildContext context) {
@@ -20,25 +20,32 @@ class CardGrid extends StatelessWidget {
             constraints: BoxConstraints(
               maxWidth: screenWidth >= 1200 ? 1200 : double.infinity,
             ),
-            child: GridView.builder(
-              padding: EdgeInsets.all(values.padding),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: values.crossAxisCount,
-                childAspectRatio: 1,
-                crossAxisSpacing: values.spacing,
-                mainAxisSpacing: values.spacing,
-              ),
-              itemCount: 18,
-              itemBuilder: (context, index) {
-                return CardItem(
-                  cardSize: values.cardSize,
-                  imageSize: values.imageSize,
-                  fontSize: values.fontSize,
-                  title: 'Alpukat',
-                  imagePath: 'assets/images/buah_buahan.png',
-                );
-              },
-            ),
+            child: cardItems.isEmpty
+                ? Center(
+                    child: Text(
+                      'Tidak ada kartu',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black.withOpacity(0.6),
+                      ),
+                    ),
+                  )
+                : GridView.builder(
+                    padding: EdgeInsets.all(values.padding),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: values.crossAxisCount,
+                      childAspectRatio: 1,
+                      crossAxisSpacing: values.spacing,
+                      mainAxisSpacing: values.spacing,
+                    ),
+                    itemCount:
+                        cardItems.length, // Menggunakan panjang cardItems
+                    itemBuilder: (context, index) {
+                      return cardItems[
+                          index]; // Menampilkan CardItem sesuai data
+                    },
+                  ),
           ),
         );
       },

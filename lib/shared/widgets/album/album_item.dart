@@ -28,7 +28,7 @@ class AlbumItemWidget extends StatelessWidget {
 
     // Untuk URL relatif, tambahkan base URL
     final baseUrl = ApiProvider().dio.options.baseUrl.replaceAll('/api', '');
-    final fullUrl = '$baseUrl$picturePath';
+    final fullUrl = '$baseUrl$picturePath' '/';
     debugPrint('Constructed URL: $fullUrl');
     return fullUrl;
   }

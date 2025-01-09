@@ -1,4 +1,4 @@
-// lib/widgets/cards/card_item.dart
+// lib/shared/widgets/cards/card_item.dart
 
 import 'package:flutter/material.dart';
 
@@ -25,13 +25,13 @@ class CardItem extends StatelessWidget {
       height: cardSize,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        image: const DecorationImage(
+        image: DecorationImage(
           image: AssetImage('assets/images/cards.png'),
           fit: BoxFit.cover,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black,
+            color: Colors.black.withOpacity(0.3),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -57,6 +57,16 @@ class CardItem extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  factory CardItem.fromJson(Map<String, dynamic> json) {
+    return CardItem(
+      cardSize: json['cardSize']?.toDouble() ?? 150.0,
+      imageSize: json['imageSize']?.toDouble() ?? 60.0,
+      fontSize: json['fontSize']?.toDouble() ?? 14.0,
+      title: json['title'] ?? 'Untitled',
+      imagePath: json['imagePath'] ?? 'assets/images/default.png',
     );
   }
 }
