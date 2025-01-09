@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ApiProvider {
   // Singleton instance
@@ -12,18 +13,15 @@ class ApiProvider {
   final dio = Dio();
   String? _token;
 
-  // Dummy token for testing
-  static const String _dummyToken = 'dummy-token';
 
-  /// Inisialisasi token dan konfigurasi Dio
   Future<void> init() async {
-    _token = _dummyToken;
+    _token = await FirebaseAuth.instance.currentUser?.getIdToken();
     await configureDio();
   }
 
   /// Mengambil token saat ini
   Future<String?> getToken() async {
-    return _token ?? _dummyToken;
+    return _token ?? await FirebaseAuth.instance.currentUser?.getIdToken();
   }
 
   /// Konfigurasi awal untuk Dio
@@ -39,9 +37,9 @@ class ApiProvider {
     }
 
     dio.options = BaseOptions(
-      baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 7),
-      receiveTimeout: const Duration(seconds: 7),
+      baseUrl: 'http://10.0.2.2:8000/api',
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 3),
       headers: {
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
@@ -104,8 +102,7 @@ class ApiProvider {
     }
   }
 
-  /// Mengambil data dari server
-  Future<dynamic> get(String path) async {
+  Future<dynamic> get(String path, [Map<String, dynamic>? params]) async {
     try {
       final response = await dio.get(
         path,
@@ -114,6 +111,7 @@ class ApiProvider {
             'Accept': 'application/json',
           },
         ),
+        queryParameters: params,
       );
       return response.data;
     } catch (e) {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../core/constants/size_config.dart';
 import '../../shared/widgets/headers/profile_header_widget.dart';
 import '../../shared/widgets/navigation/bottom_nav_bar.dart';
@@ -59,7 +61,7 @@ class HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           ProfileHeaderWidget(
-            name: 'Rifky Adi taqwim',
+            name: context.watch<AuthProvider>().user?.name ?? 'User',
           ),
           Expanded(
             child: _isLoading

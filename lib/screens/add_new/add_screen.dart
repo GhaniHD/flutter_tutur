@@ -3,7 +3,6 @@ import '../../data/models/album_item.dart';
 import '../../shared/widgets/album/album_grid.dart';
 import '../../shared/widgets/headers/add_new_header.dart';
 
-
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
 
