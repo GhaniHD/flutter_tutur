@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ApiProvider {
   static final ApiProvider _instance = ApiProvider._internal();
@@ -9,23 +10,20 @@ class ApiProvider {
   final dio = Dio();
   String? _token;
 
-  // Dummy token for testing
-  static const String _dummyToken = 'dummy-token';
-
   Future<void> init() async {
-    _token = _dummyToken;
+    _token = await FirebaseAuth.instance.currentUser?.getIdToken();
     await configureDio();
   }
 
   Future<String?> getToken() async {
-    return _token ?? _dummyToken;
+    return _token ?? await FirebaseAuth.instance.currentUser?.getIdToken();
   }
 
   Future<void> configureDio() async {
     final token = await getToken();
 
     dio.options = BaseOptions(
-      baseUrl: 'http://127.0.0.1:8000/api',
+      baseUrl: 'http://10.0.2.2:8000/api',
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 3),
       headers: {
@@ -90,7 +88,7 @@ class ApiProvider {
     }
   }
 
-  Future<dynamic> get(String path) async {
+  Future<dynamic> get(String path, [Map<String, dynamic>? params]) async {
     try {
       final token = await getToken();
       final response = await dio.get(
@@ -101,6 +99,7 @@ class ApiProvider {
             'Accept': 'application/json',
           },
         ),
+        queryParameters: params,
       );
       return response.data;
     } catch (e) {
