@@ -40,6 +40,14 @@ dependencies:
   path_provider: ^2.0.8
   shared_preferences: ^2.2.0
 
+  #  Auth
+  firebase_core: ^2.27.1
+  firebase_auth: ^4.17.9
+  google_sign_in: ^6.2.1
+
+  # State Management
+  provider: ^6.1.1
+
 
 dev_dependencies:
   flutter_test:

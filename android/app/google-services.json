@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "690489905561",
+    "project_id": "tutur-api",
+    "storage_bucket": "tutur-api.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690489905561:android:ef09b7d6caacc83e4d4308",
+        "android_client_info": {
+          "package_name": "com.example.project_tutur"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "690489905561-nu613u0rr695lmun5bcvnm5nmlkuhmv1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.project_tutur",
+            "certificate_hash": "03e2870be22e5e6db19b6f26e58ee709577a0713"
+          }
+        },
+        {
+          "client_id": "690489905561-hl3gavg51mkm5t946gt8b0gs62fb5pv1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNS5fXrhlIFw8iSXc7-wlXsWRHBivQ-lw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "690489905561-hl3gavg51mkm5t946gt8b0gs62fb5pv1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "690489905561-c4rvjkbmei921g6bet80v8o3o85i5k3t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gar.tutur"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
