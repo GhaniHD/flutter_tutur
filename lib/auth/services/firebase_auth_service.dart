@@ -31,7 +31,8 @@ class FirebaseAuthService implements AuthService {
 
       if (userCredential.user != null) {
         await _apiProvider.init();
-        final response = await _apiProvider.get('/user/${userCredential.user!.uid}');
+       final response = await _apiProvider.get('/user', {
+          'user_id': userCredential.user!.uid,});
         return UserModel.fromJson(response);
       }
       return null;
