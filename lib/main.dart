@@ -1,6 +1,6 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:project_tutur/screens/home/home_screen.dart';
 import 'package:project_tutur/screens/add_new/add_screen.dart';
 import 'package:project_tutur/screens/cards/cards_screen.dart';
@@ -9,19 +9,20 @@ import 'package:project_tutur/data/models/album_item.dart';
 import 'auth/screens/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'auth/providers/auth_provider.dart';
-
-// // import 'package:flutter/foundation.dart' show kIsWeb;
+import 'core/api/api_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Configure for web if running on web platform
-  // if (kIsWeb) {
-  //   setUrlStrategy(PathUrlStrategy());
-  // } --> error jadi dihapus (package khusus web gabisa jalan di mobile)
+  // Inisialisasi Firebase
+  try {
+    await Firebase.initializeApp();
+    // Inisialisasi ApiProvider
+    await ApiProvider().init();
+  } catch (e) {
+    print("Error during initialization: $e");
+  }
 
-  await Firebase.initializeApp();
-  _setSystemUIOverlayStyle();
   runApp(const MyApp());
 }
 
@@ -47,6 +48,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _setSystemUIOverlayStyle(); // Menambahkan pemanggilan untuk pengaturan status bar
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),

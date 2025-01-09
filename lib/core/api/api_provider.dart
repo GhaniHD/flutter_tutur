@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class ApiProvider {
   // Singleton instance
@@ -11,10 +10,18 @@ class ApiProvider {
 
   ApiProvider._internal();
 
-  final dio = Dio();
+  final Dio dio = Dio();
   String? _token;
 
+  /// Base URL tunggal
+  static String get baseUrl {
+    if (kIsWeb) {
+      return 'http://localhost:8000/api'; // Untuk Web
+    }
+    return 'http://10.0.2.2:8000/api'; // Untuk Emulator Android
+  }
 
+  /// Inisialisasi ApiProvider dan token
   Future<void> init() async {
     _token = await FirebaseAuth.instance.currentUser?.getIdToken();
     await configureDio();
@@ -29,21 +36,13 @@ class ApiProvider {
   Future<void> configureDio() async {
     final token = await getToken();
 
-    // Menentukan URL API berdasarkan platform
-    String baseUrl = '';
-    if (kIsWeb) {
-      baseUrl = 'http://localhost:8000/api'; // Untuk Web
-    } else {
-      baseUrl = 'http://10.0.2.2:8000/api'; // Untuk Emulator
-    }
-
     dio.options = BaseOptions(
-      baseUrl: 'http://10.0.2.2:8000/api',
+      baseUrl: baseUrl,
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 3),
       headers: {
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
+        if (token != null) 'Authorization': 'Bearer $token',
       },
     );
 
@@ -59,7 +58,9 @@ class ApiProvider {
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         final token = await getToken();
-        options.headers['Authorization'] = 'Bearer $token';
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
         return handler.next(options);
       },
     ));
@@ -105,16 +106,9 @@ class ApiProvider {
 
   Future<dynamic> get(String path, [Map<String, dynamic>? params]) async {
     try {
-      final token = await getToken();
       final response = await dio.get(
         path,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Accept': 'application/json',
-          },
-        ),
-        
+        queryParameters: params,
       );
       return response.data;
     } catch (e) {
@@ -122,64 +116,63 @@ class ApiProvider {
     }
   }
 
-    /// Mengirim data JSON via PUT
-    Future<dynamic> put(String path, dynamic data) async {
-      try {
-        final response = await dio.put(
-          path,
-          data: data,
-          options: Options(
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-          ),
-        );
-        return response.data;
-      } catch (e) {
-        throw _handleError(e);
-      }
-    }
-
-    /// Menghapus data
-    Future<dynamic> delete(String path) async {
-      try {
-        final response = await dio.delete(
-          path,
-          options: Options(
-            headers: {
-              'Accept': 'application/json',
-            },
-          ),
-        );
-        return response.data;
-      } catch (e) {
-        throw _handleError(e);
-      }
-    }
-
-    /// Menangani kesalahan
-    String _handleError(dynamic error) {
-      if (error is DioException) {
-        switch (error.type) {
-          case DioExceptionType.connectionTimeout:
-          case DioExceptionType.sendTimeout:
-          case DioExceptionType.receiveTimeout:
-            return 'Koneksi timeout, silakan coba lagi';
-          case DioExceptionType.badResponse:
-            if (error.response?.data != null) {
-              if (error.response?.data['error'] != null) {
-                return error.response?.data['error'];
-              } else if (error.response?.data['message'] != null) {
-                return error.response?.data['message'];
-              }
-            }
-            return 'Terjadi kesalahan pada server';
-          default:
-            return 'Terjadi kesalahan jaringan';
-        }
-      }
-      return 'Terjadi kesalahan yang tidak diketahui';
+  /// Mengirim data JSON via PUT
+  Future<dynamic> put(String path, dynamic data) async {
+    try {
+      final response = await dio.put(
+        path,
+        data: data,
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      return response.data;
+    } catch (e) {
+      throw _handleError(e);
     }
   }
 
+  /// Menghapus data
+  Future<dynamic> delete(String path) async {
+    try {
+      final response = await dio.delete(
+        path,
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+          },
+        ),
+      );
+      return response.data;
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  /// Menangani kesalahan
+  String _handleError(dynamic error) {
+    if (error is DioException) {
+      switch (error.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          return 'Koneksi timeout, silakan coba lagi';
+        case DioExceptionType.badResponse:
+          if (error.response?.data != null) {
+            if (error.response?.data['error'] != null) {
+              return error.response?.data['error'];
+            } else if (error.response?.data['message'] != null) {
+              return error.response?.data['message'];
+            }
+          }
+          return 'Terjadi kesalahan pada server';
+        default:
+          return 'Terjadi kesalahan jaringan';
+      }
+    }
+    return 'Terjadi kesalahan yang tidak diketahui';
+  }
+}
