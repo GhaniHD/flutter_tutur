@@ -61,7 +61,7 @@ class HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           ProfileHeaderWidget(
-            name: context.watch<AuthProvider>().user?.name ?? 'User',
+            name: context.watch<AuthProvider>().user?.name.split(' ').first ?? 'User',
           ),
           Expanded(
             child: _isLoading

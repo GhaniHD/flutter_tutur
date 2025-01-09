@@ -31,7 +31,9 @@ class FirebaseAuthService implements AuthService {
 
       if (userCredential.user != null) {
         await _apiProvider.init();
-        final response = await _apiProvider.get('/user/${userCredential.user!.uid}');
+        final response = await _apiProvider.get('/user', {
+          'user_id': userCredential.user!.uid
+        });
         return UserModel.fromJson(response);
       }
       return null;
@@ -67,7 +69,10 @@ class FirebaseAuthService implements AuthService {
   @override
   Future<UserModel?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(
+          clientId: '690489905561-hl3gavg51mkm5t946gt8b0gs62fb5pv1.apps.googleusercontent.com'
+      ).signIn();
+
       if (googleUser == null) return null;
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -82,9 +87,11 @@ class FirebaseAuthService implements AuthService {
       if (user != null) {
         await _apiProvider.init();
         try {
-          final response = await _apiProvider.get('/user');
+          // Coba get user berdasarkan email
+          final response = await _apiProvider.get('/user', {'email': user.email});
           return UserModel.fromJson(response);
         } catch (e) {
+          // Jika user tidak ditemukan, buat baru
           final response = await _apiProvider.post('/user/add', {
             'name': user.displayName ?? '',
             'email': user.email ?? '',
