@@ -9,7 +9,6 @@ import '../../shared/widgets/album/album_grid.dart';
 import '../../data/models/album_item.dart';
 import '../../core/api/api_provider.dart';
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -61,7 +60,8 @@ class HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           ProfileHeaderWidget(
-            name: context.watch<AuthProvider>().user?.name ?? 'User',
+            name: context.watch<AuthProvider>().user?.name.split(' ').first ??
+                'User',
           ),
           Expanded(
             child: _isLoading

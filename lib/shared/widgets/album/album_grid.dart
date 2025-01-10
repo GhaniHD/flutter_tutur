@@ -5,50 +5,42 @@ import './album_item.dart';
 class AlbumGridWidget extends StatelessWidget {
   final List<AlbumItem> albums;
 
-  const AlbumGridWidget({
-    super.key,
-    required this.albums,
-  });
+  const AlbumGridWidget({super.key, required this.albums});
 
   @override
   Widget build(BuildContext context) {
+    print(albums); // Verifikasi data yang diterima
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        int crossAxisCount;
-        double padding;
-        double spacing;
+        int crossAxisCount = 1;
+        double childAspectRatio = 3;
 
-        if (constraints.maxWidth > 1200) {
-          crossAxisCount = 5;
-          padding = 12;
-          spacing = 12;
-        } else if (constraints.maxWidth > 800) {
-          crossAxisCount = 4;
-          padding = 10;
-          spacing = 10;
-        } else {
+        if (constraints.maxWidth >= 600 && constraints.maxWidth < 900) {
+          // Tablet
+          crossAxisCount = 2;
+          childAspectRatio = 2;
+        } else if (constraints.maxWidth >= 900 && constraints.maxWidth < 1024) {
+          // Desktop kecil
           crossAxisCount = 3;
-          padding = 8;
-          spacing = 8;
+          childAspectRatio = 1.5;
+        } else if (constraints.maxWidth >= 1024) {
+          // Desktop besar
+          crossAxisCount = 4;
+          childAspectRatio = 1.5;
         }
 
         return GridView.builder(
-          padding: EdgeInsets.all(padding),
+          padding: const EdgeInsets.all(16),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            childAspectRatio: 1.0,
-            mainAxisSpacing: spacing,
-            crossAxisSpacing: spacing,
+            childAspectRatio: childAspectRatio,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
           ),
           itemCount: albums.length,
           itemBuilder: (context, index) {
-            return ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 120,
-                maxHeight: 120,
-              ),
-              child: AlbumItemWidget(album: albums[index]),
-            );
+            return AlbumItemWidget(album: albums[index]);
           },
         );
       },
