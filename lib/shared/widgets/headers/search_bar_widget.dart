@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/api/api_provider.dart';
 import '../../../data/models/album_item.dart';
-import '../../widgets/album/album_grid.dart';
 
 class SearchBarWidget extends StatefulWidget {
   final bool isVisible;
