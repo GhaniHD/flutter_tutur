@@ -4,7 +4,7 @@ import '../../../data/models/favorite_item.dart';
 import '../../shared/widgets/cards/card_item.dart'; // Import model CardItem
 import '../../shared/widgets/navigation/bottom_nav_bar.dart';
 import '../../shared/widgets/cards/card_grid.dart';
-import 'package:dio/dio.dart';
+import '../../core/api/api_provider.dart'; // Import ApiProvider
 
 class CardsScreen extends StatefulWidget {
   final AlbumItem album;
@@ -38,16 +38,15 @@ class _CardsScreenState extends State<CardsScreen> {
         _isLoading = true;
       });
 
-      final response =
-          await Dio().get('https://example.com/api/cards', queryParameters: {
+      // Menggunakan ApiProvider untuk mengambil data
+      final response = await ApiProvider().get('/album/cards', {
         'album_id': widget.album.id, // Filter berdasarkan albumId
       });
 
       // Misalkan response.data adalah list kartu yang ter-filter
       setState(() {
-        _cardItems = (response.data as List)
-            .map((data) => CardItem.fromJson(data))
-            .toList();
+        _cardItems =
+            (response as List).map((data) => CardItem.fromJson(data)).toList();
         _isLoading =
             false; // Mengubah status loading setelah data selesai diambil
       });
