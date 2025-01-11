@@ -7,8 +7,15 @@ class ApiProvider {
   factory ApiProvider() => _instance;
   ApiProvider._internal();
 
-  final dio = Dio();
+  final Dio dio = Dio();
   String? _token;
+
+  static String get baseUrl {
+    if (kIsWeb) {
+      return 'http://localhost:8000/api';
+    }
+    return 'http://10.0.2.2:8000/api';
+  }
 
   Future<void> init() async {
     _token = await FirebaseAuth.instance.currentUser?.getIdToken();
@@ -23,12 +30,13 @@ class ApiProvider {
     final token = await getToken();
 
     dio.options = BaseOptions(
-      baseUrl: 'http://10.0.2.2:8000/api',
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 3),
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 30),
       headers: {
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
+        if (token != null) 'Authorization': 'Bearer $token',
       },
     );
 
@@ -42,27 +50,29 @@ class ApiProvider {
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         final token = await getToken();
-        options.headers['Authorization'] = 'Bearer $token';
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
         return handler.next(options);
       },
     ));
   }
 
-  Future<dynamic> postFormData(String path, FormData formData) async {
+  Future<Response> postFormData(String path, FormData formData) async {
     try {
-      final token = await getToken();
       final response = await dio.post(
         path,
         data: formData,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
             'Content-Type': 'multipart/form-data',
           },
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
         ),
       );
-      return response.data;
+      return response;
     } catch (e) {
       throw _handleError(e);
     }
@@ -70,13 +80,11 @@ class ApiProvider {
 
   Future<dynamic> post(String path, dynamic data) async {
     try {
-      final token = await getToken();
       final response = await dio.post(
         path,
         data: data,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
@@ -90,15 +98,8 @@ class ApiProvider {
 
   Future<dynamic> get(String path, [Map<String, dynamic>? params]) async {
     try {
-      final token = await getToken();
       final response = await dio.get(
         path,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Accept': 'application/json',
-          },
-        ),
         queryParameters: params,
       );
       return response.data;
@@ -109,13 +110,11 @@ class ApiProvider {
 
   Future<dynamic> put(String path, dynamic data) async {
     try {
-      final token = await getToken();
       final response = await dio.put(
         path,
         data: data,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
@@ -129,12 +128,10 @@ class ApiProvider {
 
   Future<dynamic> delete(String path) async {
     try {
-      final token = await getToken();
       final response = await dio.delete(
         path,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
           },
         ),

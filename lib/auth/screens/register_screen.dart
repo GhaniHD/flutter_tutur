@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../../screens/home/home_screen.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -33,10 +32,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _passwordController.text,
         );
         if (success && mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Registrasi Berhasil"),
+              duration: Duration(seconds: 2),
+            ),
           );
+
+          await Future.delayed(Duration(seconds: 2));
+
+          // Cek mounted lagi setelah delay
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+          }
         }
       } catch (e) {
         if (mounted) {
