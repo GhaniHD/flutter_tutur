@@ -23,10 +23,21 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text,
         );
         if (success && mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Login Berhasil"),
+              duration: Duration(seconds: 2),
+            ),
           );
+
+          await Future.delayed(Duration(seconds: 2));
+
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          }
         }
       } catch (e) {
         if (mounted) {
@@ -41,13 +52,26 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _loginWithGoogle() async {
     try {
       final success = await context.read<AuthProvider>().loginWithGoogle();
+
       if (success && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Login berhasil"),
+            duration: Duration(seconds: 2),
+          ),
         );
+
+        await Future.delayed(Duration(seconds: 2));
+
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        }
       }
     } catch (e) {
+      // Cek mounted sebelum menampilkan SnackBar error
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString())),

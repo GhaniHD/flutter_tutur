@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../auth/providers/auth_provider.dart';
+import '../../../screens/profile/profile_screen.dart';
 import 'search_bar_widget.dart';
 
 class ProfileHeaderWidget extends StatefulWidget {
@@ -124,15 +127,38 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
   }
 
   Widget _buildProfileImage(double size) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: const BoxDecoration(shape: BoxShape.circle),
-      child: ClipOval(
-        child: Image.asset(
-          'assets/images/profile.png',
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfileScreen()),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: const BoxDecoration(shape: BoxShape.circle),
+        child: ClipOval(
+          child: context.watch<AuthProvider>().user?.photoUrl != null
+              ? Image.network(
+            context.watch<AuthProvider>().user!.photoUrl!,
+            width: size,
+            height: size,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                'assets/images/profile.png',
+                width: size,
+                height: size,
+                fit: BoxFit.cover,
+              );
+            },
+          )
+              : Image.asset(
+            'assets/images/profile.png',
+            width: size,
+            height: size,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );

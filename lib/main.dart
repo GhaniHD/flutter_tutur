@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:project_tutur/screens/home/home_screen.dart';
 import 'package:project_tutur/screens/add_new/add_screen.dart';
 import 'package:project_tutur/screens/cards/cards_screen.dart';
@@ -9,19 +10,34 @@ import 'package:project_tutur/data/models/album_item.dart';
 import 'auth/screens/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'auth/providers/auth_provider.dart';
+import 'core/api/api_provider.dart';
 
 // import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-// import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Configure for web if running on web platform
-  // if (kIsWeb) {
-  //   setUrlStrategy(PathUrlStrategy());
-  // } --> error jadi dihapus (package khusus web gabisa jalan di mobile)
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyBHgt88IBXpOuQM0T6lqiyBpyOBRpnBK-c",
+        authDomain: "tutur-api.firebaseapp.com",
+        projectId: "tutur-api",
+        storageBucket: "tutur-api.firebasestorage.app",
+        messagingSenderId: "690489905561",
+        appId: "1:690489905561:web:19a02fde34b6c7594d4308",
+      ),
+    );
+    await GoogleSignIn(
+        clientId: '690489905561-hl3gavg51mkm5t946gt8b0gs62fb5pv1.apps.googleusercontent.com',
+        scopes: ['openid', 'email', 'profile']
+    ).signInSilently();
+  } else {
+    await Firebase.initializeApp();
+  }
 
-  await Firebase.initializeApp();
+  await ApiProvider().init();
   _setSystemUIOverlayStyle();
   runApp(const MyApp());
 }
