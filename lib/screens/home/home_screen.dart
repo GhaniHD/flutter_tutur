@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -39,7 +40,9 @@ class HomeScreenState extends State<HomeScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading albums: $e');
+      if (kDebugMode) {
+        print('Error loading albums: $e');
+      }
       setState(() {
         _isLoading = false;
       });

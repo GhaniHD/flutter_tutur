@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
 import '../../core/api/api_provider.dart';
@@ -31,7 +34,9 @@ class FirebaseAuthService implements AuthService {
 
       if (userCredential.user != null) {
         await _apiProvider.init();
-        final response = await _apiProvider.get('/user', {'user_id': userCredential.user!.uid});
+        final response = await _apiProvider.get('/user', {
+          'user_id': userCredential.user!.uid
+        });
         return UserModel.fromJson(response);
       }
       return null;
@@ -50,16 +55,18 @@ class FirebaseAuthService implements AuthService {
 
       if (userCredential.user != null) {
         await _apiProvider.init();
+        final hashPassword = base64.encode(utf8.encode(password));
         final response = await _apiProvider.post('/user/add', {
           'name': name,
           'email': email,
+          'password': hashPassword,
           'firebase_uid': userCredential.user!.uid,
+          'is_google_user': false
         });
         return UserModel.fromJson(response['user']);
       }
       return null;
     } catch (e) {
-      print('Register Error: $e');
       rethrow;
     }
   }
@@ -67,7 +74,10 @@ class FirebaseAuthService implements AuthService {
   @override
   Future<UserModel?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(
+          clientId: '690489905561-hl3gavg51mkm5t946gt8b0gs62fb5pv1.apps.googleusercontent.com'
+      ).signIn();
+
       if (googleUser == null) return null;
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -82,20 +92,25 @@ class FirebaseAuthService implements AuthService {
       if (user != null) {
         await _apiProvider.init();
         try {
-          final response = await _apiProvider.get('/user');
+          // Coba get user berdasarkan email
+          final response = await _apiProvider.get('/user', {'email': user.email});
           return UserModel.fromJson(response);
         } catch (e) {
+          // Jika user tidak ditemukan, buat baru
           final response = await _apiProvider.post('/user/add', {
             'name': user.displayName ?? '',
             'email': user.email ?? '',
             'firebase_uid': user.uid,
+            'is_google_user': true
           });
           return UserModel.fromJson(response['user']);
         }
       }
       return null;
     } catch (e) {
-      print('Google Sign In Error: $e');
+      if (kDebugMode) {
+        print('Google Sign In Error: $e');
+      }
       rethrow;
     }
   }
