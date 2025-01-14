@@ -6,6 +6,7 @@ import '../../../data/models/favorite_item.dart';
 import '../../shared/widgets/navigation/bottom_nav_bar.dart';
 import '../../shared/widgets/cards/card_grid.dart';
 
+
 class CardsScreen extends StatefulWidget {
   final AlbumItem album;
 

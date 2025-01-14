@@ -5,70 +5,44 @@ import '../../../core/api/api_provider.dart';
 class AlbumItemWidget extends StatelessWidget {
   final AlbumItem album;
 
-  const AlbumItemWidget({
-    super.key,
-    required this.album,
-  });
+  const AlbumItemWidget({super.key, required this.album});
 
   String? _getImageUrl(String? picturePath) {
     if (picturePath == null) return null;
 
-    // Jika URL sudah dari Google Cloud Storage, gunakan langsung
     if (picturePath.startsWith('https://storage.googleapis.com')) {
-      debugPrint('Using GCS URL directly: $picturePath');
       return picturePath;
     }
 
-    // Jika URL dimulai dengan http atau https, gunakan langsung
     if (picturePath.startsWith('http://') ||
         picturePath.startsWith('https://')) {
-      debugPrint('Using full URL directly: $picturePath');
       return picturePath;
     }
 
-    // Untuk URL relatif, tambahkan base URL
     final baseUrl = ApiProvider().dio.options.baseUrl.replaceAll('/api', '');
-    final fullUrl = '$baseUrl$picturePath';
-    debugPrint('Constructed URL: $fullUrl');
+    final fullUrl = '$baseUrl$picturePath' '/';
     return fullUrl;
   }
 
-  Widget _buildImageWidget(double imageSize, String? imageUrl) {
-    if (imageUrl == null) {
-      return Container(
-        color: Colors.grey[200],
-        child: Icon(
-          Icons.photo_library,
-          size: imageSize * 0.5,
-          color: Colors.grey[400],
-        ),
-      );
-    }
-
+  Widget _buildImageWidget(double size, String? imageUrl) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
       child: Image.network(
-        imageUrl,
+        imageUrl ?? '',
+        width: size,
+        height: size,
         fit: BoxFit.cover,
-        // Tambahkan headers untuk CORS jika diperlukan
-        headers: const {
-          'Access-Control-Allow-Origin': '*',
-        },
+        headers: const {'Access-Control-Allow-Origin': '*'},
         errorBuilder: (context, error, stackTrace) {
-          debugPrint('Error loading image from $imageUrl: $error');
-          debugPrint('Stack trace: $stackTrace');
           return Container(
             color: Colors.grey[200],
-            child: Icon(
-              Icons.image_not_supported,
-              size: imageSize * 0.5,
-              color: Colors.grey[400],
-            ),
+            width: size,
+            height: size,
+            child: const Icon(Icons.image, size: 40, color: Colors.grey),
           );
         },
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) {
-            debugPrint('Image loaded successfully from: $imageUrl');
             return child;
           }
           return Center(
@@ -84,70 +58,77 @@ class AlbumItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAlbumContent(BuildContext context, double size) {
-    final imageSize = size * 0.5;
-    final fontSize = size * 0.11;
-
-    return Transform.translate(
-      offset: Offset(-size * 0.02, 0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(height: size * 0.09),
-          Container(
-            width: imageSize,
-            height: imageSize,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: _buildImageWidget(imageSize, _getImageUrl(album.picture)),
-          ),
-          SizedBox(height: size * 0.02),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: size * 0.1),
-            child: Text(
-              album.name,
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/cardscreen',
-          arguments: album,
-        );
+        Navigator.pushNamed(context, '/cardscreen', arguments: album);
       },
-      child: Stack(
-        children: [
-          Image.asset(
-            'assets/images/blue.png',
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.fill,
-          ),
-          Center(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return _buildAlbumContent(context, constraints.maxWidth);
-              },
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          double imageSize;
+          double fontSize;
+
+          if (constraints.maxWidth < 600) {
+            imageSize = 80.0;
+            fontSize = 18.0;
+          } else if (constraints.maxWidth < 900) {
+            imageSize = 120.0;
+            fontSize = 24.0;
+          } else {
+            imageSize = 150.0;
+            fontSize = 28.0;
+          }
+
+          return Container(
+            decoration: BoxDecoration(
+              color:
+                  Colors.primaries[album.id % Colors.primaries.length].shade200,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  offset: Offset(0, 4),
+                  blurRadius: 6,
+                ),
+              ],
             ),
-          ),
-        ],
+            padding: const EdgeInsets.all(16),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () {
+                  Navigator.pushNamed(context, '/cardscreen', arguments: album);
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: imageSize,
+                      height: imageSize,
+                      child: _buildImageWidget(
+                          imageSize, _getImageUrl(album.picture)),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        album.name,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                          letterSpacing: 1.2,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
